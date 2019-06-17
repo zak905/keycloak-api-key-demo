@@ -1,0 +1,34 @@
+<html>
+<head>
+
+
+  <script>
+  document.addEventListener("DOMContentLoaded", (e) => {
+  var request = new XMLHttpRequest();
+  request.addEventListener("load", (evt) => {
+  let userInfo = JSON.parse(evt.target.response)
+  document.getElementById("username").innerText = userInfo.name;
+  document.getElementById("api-key").innerText = userInfo["api-key"];
+  });
+  request.open("GET", "/user");
+  request.send();
+  });
+  </script>
+</head>
+<body>
+
+<h1>Welcome to App</h1> <h2 id="username"></h2>
+
+You can access the rest api by using the api key <h3 id="api-key"> </h3>
+
+<button id="logout">logout</button>
+<script>
+  document.getElementById("logout").addEventListener("click", (e) => {
+  var request = new XMLHttpRequest();
+  request.open("POST", "/logout");
+  request.addEventListener("loadend", (e) => {window.location.pathname = "/";});
+  request.send();
+  });
+</script>
+</body>
+</html>

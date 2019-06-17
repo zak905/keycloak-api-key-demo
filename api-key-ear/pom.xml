@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.gwidgets</groupId>
+        <artifactId>api-key-keycloak-example</artifactId>
+        <version>0.1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>api-key-ear</artifactId>
+    <packaging>ear</packaging>
+
+    <properties>
+        <dockerfile-maven-version>1.4.3</dockerfile-maven-version>
+    </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>com.gwidgets</groupId>
+            <artifactId>api-key-module</artifactId>
+            <version>${version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>2.10.1</version>
+                <configuration>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <modules>
+                        <jarModule>
+                            <groupId>com.gwidgets</groupId>
+                            <artifactId>api-key-module</artifactId>
+                            <includeInApplicationXml>true</includeInApplicationXml>
+                            <bundleFileName>api-key-module.jar</bundleFileName>
+                            <bundleDir>/</bundleDir>
+                        </jarModule>
+                    </modules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
