@@ -53,5 +53,10 @@
             <version>1.0.0.Final</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-ses</artifactId>
+            <version>1.11.538</version>
+        </dependency>
     </dependencies>
 </project>
