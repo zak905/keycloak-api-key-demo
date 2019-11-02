@@ -24,7 +24,7 @@
     </build>
 
     <properties>
-        <keyclock.version>6.0.1</keyclock.version>
+        <keyclock.version>7.0.1</keyclock.version>
     </properties>
 
 
