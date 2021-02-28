@@ -1,8 +1,8 @@
-FROM java:8-jre-alpine
+FROM openjdk:11-jre-slim
 
-ENV KEYCLOAK_VERSION 6.0.1
+ENV KEYCLOAK_VERSION 12.0.3
 
-RUN apk add --no-cache ca-certificates openssl && wget https://downloads.jboss.org/keycloak/${KEYCLOAK_VERSION}/keycloak-${KEYCLOAK_VERSION}.tar.gz
+RUN apt-get update && apt-get install -y wget && wget https://github.com/keycloak/keycloak/releases/download/${KEYCLOAK_VERSION}/keycloak-${KEYCLOAK_VERSION}.tar.gz
 
 RUN tar xvf keycloak-${KEYCLOAK_VERSION}.tar.gz && rm keycloak-${KEYCLOAK_VERSION}.tar.gz
 

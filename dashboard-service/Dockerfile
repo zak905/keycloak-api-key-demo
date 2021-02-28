@@ -1,4 +1,4 @@
-FROM maven:3.6-jdk-8-alpine as builder
+FROM maven:3-openjdk-11-slim as builder
 
 RUN mkdir app
 
@@ -9,7 +9,7 @@ COPY pom.xml .
 
 RUN mvn clean package
 
-FROM openjdk:8-jre-alpine
+FROM openjdk:11-jre-slim
 
 ARG VERSION=0.1
 
