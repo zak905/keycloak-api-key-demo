@@ -5,6 +5,7 @@ import java.util.Objects;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
@@ -25,6 +26,6 @@ public class ApiKeyResource {
     @Produces("application/json")
     public Response checkApiKey(@QueryParam("apiKey") String apiKey) {
         List<UserModel> result = session.userStorageManager().searchForUserByUserAttribute("api-key", apiKey, session.realms().getRealm(realmName));
-        return result.isEmpty() ? Response.status(401).build(): Response.ok().build();
+        return result.isEmpty() ? Response.status(401).type(MediaType.APPLICATION_JSON).build(): Response.ok().type(MediaType.APPLICATION_JSON).build();
     }
 }
