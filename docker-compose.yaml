@@ -7,6 +7,7 @@ services:
     command: ["-Dkeycloak.migration.action=import", "-Dkeycloak.migration.provider=dir", "-Dkeycloak.migration.dir=/import", "-Dkeycloak.profile.feature.upload_scripts=enabled", "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"]
     volumes:
       - ./api-key-ear/import:/import
+      - ./api-key-ear/target/deploy:/keycloak/standalone/deployments
     ports:
     - "8080:8080"
   dashboard-service:

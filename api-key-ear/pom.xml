@@ -47,4 +47,34 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-ear-plugin</artifactId>
+                        <version>2.10.1</version>
+                        <configuration>
+                        <defaultLibBundleDir>lib</defaultLibBundleDir>
+                        <modules>
+                            <jarModule>
+                                <groupId>com.gwidgets</groupId>
+                                <artifactId>api-key-module</artifactId>
+                                <includeInApplicationXml>true</includeInApplicationXml>
+                                <bundleFileName>api-key-module.jar</bundleFileName>
+                                <bundleDir>/</bundleDir>
+                            </jarModule>
+                        </modules>
+                            <outputDirectory>
+                                ${project.build.directory}/deploy
+                            </outputDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
