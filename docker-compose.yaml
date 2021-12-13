@@ -1,13 +1,14 @@
-version: '3.3'
+version: '3.7'
 services:
   auth-server:
-    build: api-key-ear
+    image: jboss/keycloak:15.0.2
     environment:
-      REALM_NAME: example
-    command: ["-Dkeycloak.migration.action=import", "-Dkeycloak.migration.provider=dir", "-Dkeycloak.migration.dir=/import", "-Dkeycloak.profile.feature.upload_scripts=enabled", "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"]
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      JAVA_OPTS_APPEND: "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=dir -Dkeycloak.migration.dir=/import -Dkeycloak.migration.strategy=IGNORE_EXISTING -Dkeycloak.profile.feature.upload_scripts=enabled"
     volumes:
-      - ./api-key-ear/import:/import
-      - ./api-key-ear/target/deploy:/keycloak/standalone/deployments
+      - ./import:/import
+      - ./api-key-module/target/deploy:/opt/jboss/keycloak/standalone/deployments/
     ports:
     - "8080:8080"
   dashboard-service:
