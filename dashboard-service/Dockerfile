@@ -1,20 +1,20 @@
-FROM maven:3-openjdk-11-slim as builder
+#FROM maven:3-openjdk-11-slim as builder
 
-RUN mkdir app
+#RUN mkdir app
 
-WORKDIR app
+#WORKDIR app
 
-COPY src src
-COPY pom.xml .
+#COPY src src
+#COPY pom.xml .
 
-RUN mvn clean package
+#RUN mvn clean package
 
 FROM openjdk:11-jre-slim
 
 ARG VERSION=0.1
 
-COPY --from=builder /app/target/dashboard-service-${VERSION}.jar app.jar
+COPY ./target/dashboard-service-${VERSION}.jar app.jar
 
-EXPOSE 8080
+EXPOSE 8180
 
 CMD ["java", "-jar", "app.jar"]
