@@ -8,6 +8,7 @@ import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import java.util.Map;
 import org.jboss.logging.Logger;
+import org.keycloak.email.EmailException;
 import org.keycloak.email.EmailSenderProvider;
 import org.keycloak.models.UserModel;
 
@@ -24,20 +25,25 @@ public class SESEmailSenderProvider implements EmailSenderProvider {
 
   @Override
   public void send(Map<String, String> config, UserModel user, String subject, String textBody,
-      String htmlBody) {
+      String htmlBody) throws EmailException {
+    this.send(config, user.getEmail(), subject, textBody, htmlBody);
+  }
 
-      log.info("attempting to send email using aws ses for " + user.getEmail());
+  @Override
+  public void send(Map<String, String> config, String address, String subject, String textBody, String htmlBody) throws EmailException {
 
-      Message message = new Message().withSubject(new Content().withData(subject))
-          .withBody(new Body().withHtml(new Content().withData(htmlBody))
-              .withText(new Content().withData(textBody).withCharset("UTF-8")));
+    log.info("attempting to send email using aws ses for " + address);
 
-      SendEmailRequest sendEmailRequest = new SendEmailRequest()
-          .withSource("example<" + config.get("from") + ">")
-          .withMessage(message).withDestination(new Destination().withToAddresses(user.getEmail()));
+    Message message = new Message().withSubject(new Content().withData(subject))
+        .withBody(new Body().withHtml(new Content().withData(htmlBody))
+            .withText(new Content().withData(textBody).withCharset("UTF-8")));
 
-      sesClient.sendEmail(sendEmailRequest);
-     log.info("email sent to " + user.getEmail() + " successfully");
+    SendEmailRequest sendEmailRequest = new SendEmailRequest()
+        .withSource("example<" + config.get("from") + ">")
+        .withMessage(message).withDestination(new Destination().withToAddresses(address));
+
+    sesClient.sendEmail(sendEmailRequest);
+    log.info("email sent to " + address + " successfully");
   }
 
   @Override

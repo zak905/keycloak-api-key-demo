@@ -4,7 +4,7 @@ package com.gwidgets.providers;
 import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.EntityManager;
-import org.keycloak.common.util.RandomString;
+import org.keycloak.common.util.SecretGenerator;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
@@ -23,14 +23,14 @@ public class RegisterEventListenerProvider implements EventListenerProvider  {
     private KeycloakSession session;
     private RealmProvider model;
     //keycloak utility to generate random strings, anything can be used e.g UUID,..
-    private RandomString randomString;
+    private SecretGenerator secretGenerator;
     private EntityManager entityManager;
 
     public RegisterEventListenerProvider(KeycloakSession session) {
         this.session = session;
         this.model = session.realms();
         this.entityManager = session.getProvider(JpaConnectionProvider.class).getEntityManager();
-        this.randomString = new RandomString(50);
+        this.secretGenerator = SecretGenerator.getInstance();
     }
 
     public void onEvent(Event event) {
@@ -55,8 +55,7 @@ public class RegisterEventListenerProvider implements EventListenerProvider  {
 
 
     public void addApiKeyAttribute(String userId) {
-
-        String apiKey = randomString.nextString();
+        String apiKey = secretGenerator.randomString(50);
         UserEntity userEntity = entityManager.find(UserEntity.class, userId);
         UserAttributeEntity attributeEntity = new UserAttributeEntity();
         attributeEntity.setName("api-key");

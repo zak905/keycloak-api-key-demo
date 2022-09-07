@@ -1,16 +1,22 @@
-version: '3.7'
+version: '3.8'
 services:
   auth-server:
-    image: jboss/keycloak:15.0.2
+    image: quay.io/keycloak/keycloak:19.0.1
     environment:
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
-      JAVA_OPTS_APPEND: "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=dir -Dkeycloak.migration.dir=/import -Dkeycloak.migration.strategy=IGNORE_EXISTING -Dkeycloak.profile.feature.upload_scripts=enabled"
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME: auth-server
+      #to keep compatible with other services that are expecting /auth
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      JAVA_OPTS_APPEND: "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=dir -Dkeycloak.migration.dir=/import -Dkeycloak.migration.strategy=IGNORE_EXISTING"
     volumes:
       - ./import:/import
-      - ./api-key-module/target/deploy:/opt/jboss/keycloak/standalone/deployments/
+      - ./api-key-module/target/deploy:/opt/keycloak/providers/
     ports:
     - "8080:8080"
+    command: ["start"]
   dashboard-service:
     build: dashboard-service
     environment:
