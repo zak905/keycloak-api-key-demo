@@ -1,32 +1,27 @@
 package com.gwidgets.resources;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.UserModel;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Objects;
-import java.util.stream.Stream;
-
+@Provider
 public class ApiKeyResource {
 
-    private KeycloakSession session;
-
-    private final String realmName;
+    private final KeycloakSession session;
 
     public ApiKeyResource(KeycloakSession session) {
         this.session = session;
-        String envRealmName = System.getenv("REALM_NAME");
-        this.realmName = Objects.isNull(envRealmName) || Objects.equals(System.getenv(envRealmName), "")? "example": envRealmName;
     }
 
     @GET
     @Produces("application/json")
     public Response checkApiKey(@QueryParam("apiKey") String apiKey) {
-        Stream<UserModel> result = session.users().searchForUserByUserAttributeStream(session.realms().getRealm(realmName), "api-key", apiKey);
-        return result.count() > 0 ? Response.ok().type(MediaType.APPLICATION_JSON).build(): Response.status(401).type(MediaType.APPLICATION_JSON).build();
+        return session.users().searchForUserByUserAttributeStream(session.getContext().getRealm(), "api-key", apiKey)
+                .findFirst().isPresent() ? Response.ok().type(MediaType.APPLICATION_JSON).build():
+                Response.status(401).type(MediaType.APPLICATION_JSON).build();
     }
 }

@@ -12,15 +12,11 @@ public class RegisterEventListenerProviderFactory implements EventListenerProvid
         return new RegisterEventListenerProvider(keycloakSession);
     }
 
-    public void init(Config.Scope scope) {
-    }
+    public void init(Config.Scope scope) {}
 
-    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
+    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {}
 
-    }
-
-    public void close() {
-    }
+    public void close() {}
 
     public String getId() {
         return "api-key-registration-generation";

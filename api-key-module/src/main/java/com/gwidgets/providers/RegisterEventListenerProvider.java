@@ -1,9 +1,7 @@
 package com.gwidgets.providers;
 
 
-import java.util.Objects;
-import java.util.UUID;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.keycloak.common.util.SecretGenerator;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.events.Event;
@@ -13,22 +11,18 @@ import org.keycloak.events.admin.AdminEvent;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.RealmModel;
-import org.keycloak.models.RealmProvider;
 import org.keycloak.models.jpa.entities.UserAttributeEntity;
 import org.keycloak.models.jpa.entities.UserEntity;
 
-public class RegisterEventListenerProvider implements EventListenerProvider  {
+import java.util.Objects;
+import java.util.UUID;
 
-    private KeycloakSession session;
-    private RealmProvider model;
-    //keycloak utility to generate random strings, anything can be used e.g UUID,..
-    private SecretGenerator secretGenerator;
-    private EntityManager entityManager;
+public class RegisterEventListenerProvider implements EventListenerProvider  {
+    //keycloak utility to generate random strings, anything can be used e.g. UUID,...
+    private final SecretGenerator secretGenerator;
+    private final EntityManager entityManager;
 
     public RegisterEventListenerProvider(KeycloakSession session) {
-        this.session = session;
-        this.model = session.realms();
         this.entityManager = session.getProvider(JpaConnectionProvider.class).getEntityManager();
         this.secretGenerator = SecretGenerator.getInstance();
     }
@@ -36,7 +30,6 @@ public class RegisterEventListenerProvider implements EventListenerProvider  {
     public void onEvent(Event event) {
         //we are only interested in the register event
         if (event.getType().equals(EventType.REGISTER)) {
-            RealmModel realm = model.getRealm(event.getRealmId());
             String userId = event.getUserId();
             addApiKeyAttribute(userId);
         }
@@ -66,7 +59,5 @@ public class RegisterEventListenerProvider implements EventListenerProvider  {
     }
 
     @Override
-    public void close() {
-
-    }
+    public void close() {}
 }

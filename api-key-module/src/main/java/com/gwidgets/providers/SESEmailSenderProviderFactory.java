@@ -16,7 +16,6 @@ public class SESEmailSenderProviderFactory implements EmailSenderProviderFactory
 
   @Override
   public EmailSenderProvider create(KeycloakSession session) {
-
     //using singleton pattern to avoid creating the client each time create is called
     if (sesClientInstance == null) {
       String awsRegion = Objects.requireNonNull(System.getenv("AWS_REGION"));
@@ -32,16 +31,13 @@ public class SESEmailSenderProviderFactory implements EmailSenderProviderFactory
   }
 
   @Override
-  public void init(Scope config) {
-
-  }
+  public void init(Scope config) {}
 
   @Override
-  public void postInit(KeycloakSessionFactory factory) { }
+  public void postInit(KeycloakSessionFactory factory) {}
 
   @Override
-  public void close() {
-  }
+  public void close() {}
 
   @Override
   public String getId() {
