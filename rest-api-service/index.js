@@ -13,6 +13,7 @@ app.use(function (req, res, next) {
     console.log(`checking api key ${apiKey}, auth server ${authServer}`)
 
     http.get("http://"+authServer+"/auth/realms/"+realmName+"/check?apiKey="+apiKey, (authResponse) => {
+        console.log(`received ${authResponse.statusCode} status from Keycloak`)
        if (authResponse.statusCode == 200) {
            next()
        } else {
