@@ -31,7 +31,6 @@ public class SESEmailSenderProvider implements EmailSenderProvider {
 
   @Override
   public void send(Map<String, String> config, String address, String subject, String textBody, String htmlBody) throws EmailException {
-
     log.info("attempting to send email using aws ses for " + address);
 
     Message message = new Message().withSubject(new Content().withData(subject))
@@ -47,7 +46,5 @@ public class SESEmailSenderProvider implements EmailSenderProvider {
   }
 
   @Override
-  public void close() {
-
-  }
+  public void close() {}
 }

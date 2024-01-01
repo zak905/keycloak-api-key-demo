@@ -1,9 +1,8 @@
 package com.gwidgets;
 
-import java.security.Principal;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.adapters.KeycloakConfigResolver;
+import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
@@ -22,19 +21,13 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
-import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
+
+import java.security.Principal;
 
 
 @EnableConfigurationProperties(KeycloakSpringBootProperties.class)
 @KeycloakConfiguration
 public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
-
-
-  @Bean
-  public KeycloakConfigResolver keycloakConfigResolver() {
-    return new KeycloakSpringBootConfigResolver();
-  }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
@@ -45,7 +38,6 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) {
-
     KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
 
     SimpleAuthorityMapper grantedAuthorityMapper = new SimpleAuthorityMapper();
@@ -65,7 +57,6 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
   @Bean
   @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
   public KeycloakSecurityContext getKeycloakSecurityContext() {
-
     ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     Principal principal = attributes.getRequest().getUserPrincipal();
     if (principal == null) {

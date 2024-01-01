@@ -6,8 +6,7 @@ import org.keycloak.services.resource.RealmResourceProvider;
 
 public class ApiKeyResourceProvider implements RealmResourceProvider {
 
-
-    private KeycloakSession session;
+    private final KeycloakSession session;
 
     public ApiKeyResourceProvider(KeycloakSession session) {
         this.session = session;
@@ -17,7 +16,5 @@ public class ApiKeyResourceProvider implements RealmResourceProvider {
         return new ApiKeyResource(session);
     }
 
-    public void close() {
-
-    }
+    public void close() {}
 }
