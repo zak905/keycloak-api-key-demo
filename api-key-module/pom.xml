@@ -10,7 +10,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <keycloak.version>23.0.3</keycloak.version>
+        <keycloak.version>23.0.4</keycloak.version>
     </properties>
 
     <dependencies>
