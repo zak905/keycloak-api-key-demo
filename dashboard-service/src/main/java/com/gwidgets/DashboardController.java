@@ -1,27 +1,20 @@
 package com.gwidgets;
 
-import javax.servlet.http.HttpServletRequest;
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.keycloak.representations.AccessToken;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Map;
 
 @Controller
 public class DashboardController {
 
-
   @GetMapping(value = "/user", produces = "application/json")
   @ResponseBody
-  public AccessToken getUserInfo(HttpServletRequest request) {
-    return ((KeycloakPrincipal<RefreshableKeycloakSecurityContext>)((KeycloakAuthenticationToken)request.getUserPrincipal()).getPrincipal()).getKeycloakSecurityContext().getToken();
-  }
-
-  @PostMapping("/logout")
-  public @ResponseBody void logout(HttpServletRequest request) throws Exception {
-    request.logout();
+  public Map <String, Object> getUserInfo(HttpServletRequest request) {
+    var tokenAttributes = ((OAuth2AuthenticationToken) request.getUserPrincipal()).getPrincipal().getAttributes();
+    return Map.of("api-key", tokenAttributes.get("api-key"), "email", tokenAttributes.get("email"));
   }
 }

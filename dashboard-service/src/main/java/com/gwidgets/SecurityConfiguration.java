@@ -1,76 +1,67 @@
 package com.gwidgets;
 
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.adapters.springboot.KeycloakSpringBootProperties;
-import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
-import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
-import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.security.Principal;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.logging.Logger;
 
 
-@EnableConfigurationProperties(KeycloakSpringBootProperties.class)
-@KeycloakConfiguration
-public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration  {
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    super.configure(http);
-    http.authorizeRequests().antMatchers("/**").authenticated()
-        .and().anonymous().disable().csrf().disable();
-  }
+    @Value("${spring.security.oauth2.client.provider.keycloak.issuer-uri}")
+    String keycloakBaseUrl;
 
-  @Autowired
-  public void configureGlobal(AuthenticationManagerBuilder auth) {
-    KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
-
-    SimpleAuthorityMapper grantedAuthorityMapper = new SimpleAuthorityMapper();
-    grantedAuthorityMapper.setPrefix("ROLE_");
-    grantedAuthorityMapper.setConvertToUpperCase(true);
-    keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(grantedAuthorityMapper);
-    auth.authenticationProvider(keycloakAuthenticationProvider);
-  }
+    Logger log = Logger.getLogger("com.gwidgets.SecurityConfiguration");
 
   @Bean
-  @Override
-  protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-    return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
-  }
+   SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
+     return httpSecurity.authorizeHttpRequests((authorize) -> {
+       authorize.requestMatchers("/**").authenticated();
+     }).anonymous((anonymousConfigurer) -> anonymousConfigurer.disable()).csrf((csrfConfigurer) -> csrfConfigurer.disable()).
+             sessionManagement((sessionManagementConfigurer) -> {
+               sessionManagementConfigurer.addSessionAuthenticationStrategy(new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl()));
+             })
+             .oauth2Login(Customizer.withDefaults())
+             .logout((configurer) -> {
+                    configurer.logoutUrl("/logout");
+                    configurer.logoutSuccessHandler((req, res, authentication) -> {
+                        OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
+                        DefaultOidcUser defaultOidcUser = (DefaultOidcUser) token.getPrincipal();
 
-
-  @Bean
-  @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-  public KeycloakSecurityContext getKeycloakSecurityContext() {
-    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-    Principal principal = attributes.getRequest().getUserPrincipal();
-    if (principal == null) {
-      return null;
-    }
-
-    if (principal instanceof KeycloakAuthenticationToken) {
-      principal = Principal.class.cast(KeycloakAuthenticationToken.class.cast(principal).getPrincipal());
-    }
-
-    if (principal instanceof KeycloakPrincipal) {
-      return KeycloakPrincipal.class.cast(principal).getKeycloakSecurityContext();
-    }
-
-    return null;
+                        HttpRequest request = HttpRequest.newBuilder().GET()
+                                .uri(URI.create(keycloakBaseUrl + "/protocol/openid-connect/logout?" +
+                                        "id_token_hint="+defaultOidcUser.getIdToken().getTokenValue()))
+                                .build();
+                        HttpClient client = HttpClient.newBuilder().build();
+                        HttpResponse response;
+                        try {
+                            response = client.send(request, HttpResponse.BodyHandlers.discarding());
+                            if (response.statusCode() != 200) {
+                                log.warning("Keycloak logout failed, received status: " + response.statusCode());
+                            } else {
+                                log.info("logout from Keycloak successfull");
+                            }
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        res.sendRedirect("/");
+                    });
+             })
+              .build();
   }
 }
