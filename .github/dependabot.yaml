@@ -1,0 +1,52 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/api-key-module"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "dependencies upgrade(api-key-module)"
+    groups:
+      all:
+        patterns:
+          - "*"
+  - package-ecosystem: "maven"
+    directory: "/dashboard-service"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "dependencies upgrade(dashboard-service)"
+    groups:
+      all:
+        patterns:
+          - "*"
+  - package-ecosystem: "maven"
+    directory: "/e2e"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "dependencies upgrade(e2e)"
+    groups:
+      all:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/rest-api-service"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "dependencies upgrade(rest-api-service)"
+    groups:
+      all:
+        patterns:
+          - "*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "dependencies upgrade(github actions)"
+    groups:
+      all:
+        patterns:
+          - "*"
