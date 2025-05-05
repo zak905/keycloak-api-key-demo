@@ -1,0 +1,44 @@
+name: PR checks
+
+
+on:
+  pull_request: 
+    types: [opened, synchronize, reopened]
+
+
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: cache local Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: build modules
+        run: |
+            mvn -f api-key-module package
+            mvn -f dashboard-service package
+      - name: run stack and wait for readiness
+        run: |
+            docker compose up -d auth-server
+            ./wait-for-url.sh http://localhost:8080 10 5s
+            docker compose up -d
+            ./wait-for-url.sh http://localhost:8180 10 5s
+      - name: e2e tests
+        run: |
+            # because within docker compose network the host name is auth-server and not localhost
+            # when we get redirect in the browser, the host needs to map auth-server ---> localhost
+            sudo sed -i '/127.0.0.1/ s/$/ auth-server/' /etc/hosts
+            mvn -f e2e/ test
+        
+      
+  
