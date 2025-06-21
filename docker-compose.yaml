@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   auth-server:
     image: quay.io/keycloak/keycloak:26.2.5

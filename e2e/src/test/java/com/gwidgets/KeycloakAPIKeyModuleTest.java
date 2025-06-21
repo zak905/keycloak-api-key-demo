@@ -72,7 +72,7 @@ public class KeycloakAPIKeyModuleTest {
 
         var response = client.send(unauthenticatedRequest, HttpResponse.BodyHandlers.discarding());
 
-        assertEquals(response.statusCode(), 401);
+        assertEquals(401, response.statusCode());
 
         var authenticatedRequest = HttpRequest.newBuilder()
                 .uri(URI.create(restServicedUrl))
@@ -82,7 +82,7 @@ public class KeycloakAPIKeyModuleTest {
 
         response = client.send(authenticatedRequest, HttpResponse.BodyHandlers.discarding());
 
-        assertEquals(response.statusCode(), 200);
+        assertEquals(200, response.statusCode());
 
         var logout = driver.findElement(By.id("logout"));
         logout.click();
@@ -90,10 +90,10 @@ public class KeycloakAPIKeyModuleTest {
         Thread.sleep(1000L);
 
         // we are back to the login
-        assertEquals(driver.getTitle(), "Sign in to " + keycloakRealm);
+        assertEquals("Sign in to " + keycloakRealm, driver.getTitle());
         var currentUrl = URI.create(driver.getCurrentUrl());
         var currentBaseUrl = currentUrl.getScheme() + "://" + currentUrl.getAuthority();
-        assertEquals(currentBaseUrl, keycloakBaseUrl);
+        assertEquals(keycloakBaseUrl, currentBaseUrl);
 
         // attempt to go back to the dashboard after logout
         driver.navigate().to(dashboarServicedUrl);
@@ -106,7 +106,7 @@ public class KeycloakAPIKeyModuleTest {
         // to test that we are effectively logged out
         // we check we are redirected to the login
         // if we try to navigate
-        assertEquals(currentBaseUrl, keycloakBaseUrl);
+        assertEquals(keycloakBaseUrl, currentBaseUrl);
 
         driver.quit();
     }
