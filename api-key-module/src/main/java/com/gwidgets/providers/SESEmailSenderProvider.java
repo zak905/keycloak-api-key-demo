@@ -46,5 +46,11 @@ public class SESEmailSenderProvider implements EmailSenderProvider {
   }
 
   @Override
+  public void validate(Map<String, String> config) throws EmailException {
+     
+      
+  }
+
+  @Override
   public void close() {}
 }
