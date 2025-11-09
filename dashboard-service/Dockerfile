@@ -9,7 +9,7 @@
 
 #RUN mvn clean package
 
-FROM openjdk:17-alpine
+FROM openjdk:26-ea-trixie
 
 ARG VERSION=0.1
 
