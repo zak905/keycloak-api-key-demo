@@ -10,7 +10,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <keycloak.version>26.4.0</keycloak.version>
+        <keycloak.version>26.4.4</keycloak.version>
     </properties>
 
     <dependencies>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-ses</artifactId>
-            <version>1.12.791</version>
+            <version>1.12.793</version>
         </dependency>
     </dependencies>
 
