@@ -9,7 +9,7 @@
 
 #RUN mvn clean package
 
-FROM openjdk:26-ea-trixie
+FROM openjdk:25-ea-1-slim
 
 ARG VERSION=0.1
 
