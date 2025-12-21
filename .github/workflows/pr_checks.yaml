@@ -33,7 +33,6 @@ jobs:
             ./wait-for-url.sh http://localhost:8080 10 5s
             docker compose up -d
             ./wait-for-url.sh http://localhost:8180 10 5s
-            docker compose logs dashboard-service
       - name: e2e tests
         run: |
             # because within docker compose network the host name is auth-server and not localhost

@@ -14,6 +14,7 @@ spring:
             issuer-uri: http://auth-server:8080/auth/realms/${REALM_NAME:example}
         registration:
           keycloak:
+            provider: keycloak
             client-id: dashboard-client
             client-secret: 8556a0a4-7235-4e90-a712-42c0fde60474
             authorization-grant-type: authorization_code

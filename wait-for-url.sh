@@ -13,7 +13,6 @@ until $(curl --silent --output /dev/null --head --fail $url); do
      echo "try number $tries"
     sleep $sleep_time
     if [ $tries -eq $max_tries ]; then
-        docker compose logs dashboard-service
         exit 1
     fi
 done
