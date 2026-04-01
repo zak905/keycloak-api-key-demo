@@ -10,7 +10,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <keycloak.version>26.5.4</keycloak.version>
+        <keycloak.version>26.5.6</keycloak.version>
     </properties>
 
     <dependencies>
@@ -66,7 +66,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.6.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
