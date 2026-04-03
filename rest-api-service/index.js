@@ -1,33 +1,44 @@
-var express = require('express')
 const http = require('http');
-var app = express()
 
+const PORT = 8280;
 
-app.use(function (req, res, next) {
-    //always received as lower case by node
-    let apiKey = req.headers["x-api-key"];
-
-    let authServer = process.env.AUTH_SERVER_URL
+function checkApiKey(apiKey, callback) {
+    let authServer = process.env.AUTH_SERVER_URL;
     let realmName = process.env.REALM_NAME;
 
-    console.log(`checking api key ${apiKey}, auth server ${authServer}`)
+    console.log(`checking api key ${apiKey}, auth server ${authServer}`);
 
-    http.get("http://"+authServer+"/auth/realms/"+realmName+"/check?apiKey="+apiKey, (authResponse) => {
-        console.log(`received ${authResponse.statusCode} status from Keycloak`)
-       if (authResponse.statusCode == 200) {
-           next()
-       } else {
-          res.status(401).send();
-       }
+    http.get("http://" + authServer + "/auth/realms/" + realmName + "/check?apiKey=" + apiKey, (authResponse) => {
+        console.log(`received ${authResponse.statusCode} status from Keycloak`);
+        callback(authResponse.statusCode === 200);
+    }).on('error', (err) => {
+        console.error(`auth request failed: ${err.message}`);
+        callback(false);
     });
-  })
+}
 
+const server = http.createServer((req, res) => {
+    const apiKey = req.headers["x-api-key"];
 
-app.get('/', function (req, res) {        
-    console.log("returning response")
-    res.status(200).set("Content-Type", "application/json").send('{"forecast" : "weather is cool today"}')
-})
+    checkApiKey(apiKey, (authorized) => {
+        if (!authorized) {
+            res.writeHead(401);
+            res.end();
+            return;
+        }
 
-var server = app.listen(8280, function () {
-    console.log("service running at http://%s:%s", server.address().address, server.address().port)
- })
+        if (req.method === 'GET' && req.url === '/') {
+            console.log("returning response");
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end('{"forecast" : "weather is cool today"}');
+        } else {
+            res.writeHead(404);
+            res.end();
+        }
+    });
+});
+
+server.listen(PORT, () => {
+    const addr = server.address();
+    console.log("service running at http://%s:%s", addr.address, addr.port);
+});
