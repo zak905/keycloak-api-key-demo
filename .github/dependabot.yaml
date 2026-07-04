@@ -1,4 +1,12 @@
 version: 2
+
+
+multi-ecosystem-groups:
+  # Define your group and its update schedule
+  keycloak:
+    schedule:
+      interval: "monthly"
+
 updates:
   - package-ecosystem: "maven"
     directory: "/api-key-module"
@@ -7,9 +15,12 @@ updates:
     commit-message:
       prefix: "dependencies upgrade(api-key-module)"
     groups:
-      all:
+      keycloak:
         patterns:
-          - "*"
+          - "keycloak"
+      other-dependencies:
+        exclude-patterns:
+          - "keycloak"
   - package-ecosystem: "maven"
     directory: "/dashboard-service"
     schedule:
@@ -47,9 +58,12 @@ updates:
     commit-message:
       prefix: "dependencies upgrade(docker-compose)"
     groups:
-      all:
+      keycloak:
         patterns:
-          - "*"
+          - "keycloak"
+      other-dependencies:
+        exclude-patterns:
+          - "keycloak"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
